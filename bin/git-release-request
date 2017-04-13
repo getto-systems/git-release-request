@@ -1,0 +1,117 @@
+#!/bin/bash
+
+git_release_request_main(){
+  local git_root
+  local version_dump_message
+  local -a version_files
+  local last
+  local version
+
+  version_files=(
+    mix.exs
+    package.json
+    elm-package.json
+  )
+
+  git_root=$(git rev-parse --show-toplevel)
+  if [ ! -d "$git_root" ]; then
+    echo "current directory not in git"
+    exit 1
+  fi
+
+  cd $git_root
+  version_dump_message="version dump"
+
+  git_release_request_get_last
+  git_release_request_build_version
+
+  git_release_request_dump_version
+  git_release_request_build_changelog
+
+  git branch-and-post "$version_dump_message"
+}
+git_release_request_get_last(){
+  local file
+
+  for file in ${version_files}; do
+    if [ -f "$file" ]; then
+      case "$file" in
+        mix.exs)
+          last=$(grep 'version:' $file | cut -d'"' -f2)
+          ;;
+        package.json|elm-package.json)
+          last=$(grep '"version":' $file | cut -d'"' -f4)
+          ;;
+      esac
+    fi
+    if [ -n "$last" ]; then
+      return
+    fi
+  done
+}
+git_release_request_dump_version(){
+  local file
+
+  for file in ${version_files}; do
+    if [ -f "$file" ]; then
+      case "$file" in
+        mix.exs)
+          sed -i 's/version: "[0-9.-]\+"/version: "'$version'"/' $file
+          ;;
+        package.json|elm-package.json)
+          sed -i 's/"version": "[0-9.-]\+"/"version": "'$version'"/' $file
+          ;;
+      esac
+      git add $file
+    fi
+  done
+}
+git_release_request_build_version(){
+  local last_date
+  local date
+  local count
+
+  last_date=$(echo "$last" | cut -d'-' -f1)
+  date=$(date "+%Y.%-m.%-d")
+
+  if [ "$last_date" == $date ]; then
+    count=$(echo "$last" | cut -d'-' -f2)
+    count=$((count+1))
+  else
+    count=1
+  fi
+
+  version=${date}-${count}
+}
+git_release_request_build_changelog(){
+  local changelog_root
+  local changelog
+
+  changelog_root=CHANGELOG
+  changelog=$changelog_root/${version}.md
+
+  mkdir -p $changelog_root
+
+  git_release_request_changelog "# Changelog : $version"
+  git_release_request_changelog
+  git_release_request_changelog "## commits"
+  git_release_request_changelog
+  git_release_request_changelog_logs
+
+  git add $changelog
+}
+git_release_request_changelog(){
+  echo "$1" >> $changelog
+}
+git_release_request_changelog_logs(){
+  local last_release
+  local revision_range
+
+  last_release=$(git log --grep "$version_dump_message" --no-merges -1 --format="%H")
+  if [ -n "$last_release" ]; then
+    revision_range=${last_release}..
+  fi
+  git log $revision_range --no-merges --format="* %s" >> $changelog
+}
+
+git_release_request_main
