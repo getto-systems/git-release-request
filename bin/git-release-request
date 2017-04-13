@@ -33,7 +33,7 @@ git_release_request_main(){
 git_release_request_get_last(){
   local file
 
-  for file in ${version_files}; do
+  for file in ${version_files[@]}; do
     if [ -f "$file" ]; then
       case "$file" in
         mix.exs)
@@ -52,7 +52,7 @@ git_release_request_get_last(){
 git_release_request_dump_version(){
   local file
 
-  for file in ${version_files}; do
+  for file in ${version_files[@]}; do
     if [ -f "$file" ]; then
       case "$file" in
         mix.exs)
