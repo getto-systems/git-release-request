@@ -1,17 +1,13 @@
 #!/bin/bash
 
+declare -a git_release_version_files
+
+. git-release.rc.sh
+
 git_release_request_main(){
   local git_root
   local version_dump_message
-  local -a version_files
-  local last
   local version
-
-  version_files=(
-    mix.exs
-    package.json
-    elm-package.json
-  )
 
   git_root=$(git rev-parse --show-toplevel)
   if [ ! -d "$git_root" ]; then
@@ -22,7 +18,6 @@ git_release_request_main(){
   cd $git_root
   version_dump_message="version dump"
 
-  git_release_request_get_last
   git_release_request_build_version
 
   git_release_request_dump_version
@@ -30,43 +25,21 @@ git_release_request_main(){
 
   git branch-and-post "$version_dump_message"
 }
-git_release_request_get_last(){
-  local file
-
-  for file in ${version_files[@]}; do
-    if [ -f "$file" ]; then
-      case "$file" in
-        mix.exs)
-          last=$(grep 'version:' $file | cut -d'"' -f2)
-          ;;
-        package.json|elm-package.json)
-          last=$(grep '"version":' $file | cut -d'"' -f4)
-          ;;
-      esac
-    fi
-    if [ -n "$last" ]; then
-      return
-    fi
-  done
-}
-git_release_request_dump_version(){
-  local file
-
-  for file in ${version_files[@]}; do
-    if [ -f "$file" ]; then
-      case "$file" in
-        mix.exs)
-          sed -i 's/version: "[0-9.-]\+"/version: "'$version'"/' $file
-          ;;
-        package.json|elm-package.json)
-          sed -i 's/"version": "[0-9.-]\+"/"version": "'$version'"/' $file
-          ;;
-      esac
-      git add $file
-    fi
-  done
-}
 git_release_request_build_version(){
+  local last
+
+  git_release_request_get_last
+
+  if [[ "${last%%.*}" -lt 2000 ]]; then
+    git_release_request_next_version_normal
+  else
+    git_release_request_next_version_date
+  fi
+}
+git_release_request_next_version_normal(){
+  version=${last%.*}.$((${last##*.} + 1))
+}
+git_release_request_next_version_date(){
   local last_date
   local date
   local count
