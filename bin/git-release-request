@@ -19,6 +19,7 @@ git_release_request_main(){
   version_dump_message="version dump"
 
   git_release_request_build_version
+  git_release_request_version_confirm
 
   git_release_request_dump_version
   git_release_request_build_changelog
@@ -55,6 +56,28 @@ git_release_request_next_version_date(){
   fi
 
   version=${date}-${count}
+}
+git_release_request_version_confirm(){
+  local finish
+  local confirm_version
+  local confirm
+
+  confirm_version=$version
+
+  while [ -z "$finish" ]; do
+    read -p "release: '$confirm_version'. OK? [or custom-version-number] " confirm
+    if [ -z "$confirm" ]; then
+      finish=1
+    else
+      if [[ "$confirm_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9a-zA-Z_-]+)?$ ]]; then
+        finish=1
+      else
+        echo "'$confirm_version' is not valid version number"
+      fi
+    fi
+  done
+
+  version=$confirm_version
 }
 git_release_request_build_changelog(){
   local changelog_root
