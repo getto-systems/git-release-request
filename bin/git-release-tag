@@ -31,7 +31,7 @@ git_release_tag_main(){
     exit 1
   fi
 
-  read -p "tag '$version'. OK? [Y/n] " confirm
+  read -p "tag '$last'. OK? [Y/n] " confirm
   case "$confirm" in
     Y*|y*)
       ;;
@@ -41,7 +41,7 @@ git_release_tag_main(){
       ;;
   esac
 
-  git tag $version
+  git tag $last
   git push --tags
 }
 

@@ -12,7 +12,7 @@ git_release_request_get_last(){
         mix.exs)
           last=$(grep 'version:' $file | cut -d'"' -f2)
           ;;
-        package.json|elm-package.json)
+        package.json)
           last=$(grep '"version":' $file | cut -d'"' -f4)
           ;;
       esac
