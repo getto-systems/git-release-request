@@ -1,7 +1,6 @@
 git_release_version_files=(
   mix.exs
   package.json
-  elm-package.json
 )
 
 git_release_request_get_last(){
