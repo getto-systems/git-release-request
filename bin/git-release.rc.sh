@@ -24,6 +24,10 @@ git_release_request_get_last(){
 }
 git_release_request_dump_version(){
   local file
+  local cmd
+  local local_rc
+
+  local_rc=.git_release_request.rc.sh
 
   for file in ${git_release_version_files[@]}; do
     if [ -f "$file" ]; then
@@ -38,4 +42,13 @@ git_release_request_dump_version(){
       git add $file
     fi
   done
+
+  if [ -e "$local_rc" ]; then
+    . $local_rc
+
+    cmd=git_release_request_dump_version_local
+    if [ "$(type -t $cmd)" == "function" ]; then
+      $cmd
+    fi
+  fi
 }

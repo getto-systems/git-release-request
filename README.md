@@ -37,3 +37,19 @@ git clone https://github.com/getto-systems/git-release-request.git
 export PATH=/path/to/git-release-request/bin:$PATH
 ```
 
+## .git_release_request.rc.sh
+
+additional dump-version files
+
+```bash
+# $git_root/.git_release_request.rc.sh
+
+git_release_request_dump_version_local(){
+  local file
+  for file in some/path/*.txt; do
+    sed -i 's/version : [0-9.-]\+/version : '$version'/' $file
+    git add $file
+  done
+}
+```
+
