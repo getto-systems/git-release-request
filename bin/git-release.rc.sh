@@ -1,6 +1,7 @@
 git_release_version_files=(
   mix.exs
   package.json
+  $GIT_RELEASE_VERSION_FILE
 )
 
 git_release_request_get_last(){
@@ -14,6 +15,9 @@ git_release_request_get_last(){
           ;;
         package.json)
           last=$(grep '"version":' $file | cut -d'"' -f4)
+          ;;
+        *.rb)
+          last=$(grep 'VERSION =' $file | cut -d'"' -f2)
           ;;
       esac
     fi
@@ -37,6 +41,9 @@ git_release_request_dump_version(){
           ;;
         package.json|elm-package.json)
           sed -i 's/"version": "[0-9.-]\+"/"version": "'$version'"/' $file
+          ;;
+        *.rb)
+          sed -i 's/VERSION = "[0-9.-]\+"/VERSION = "'$version'"/' $file
           ;;
       esac
       git add $file
