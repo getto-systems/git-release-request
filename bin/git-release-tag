@@ -32,14 +32,16 @@ git_release_tag_main(){
   fi
 
   read -p "tag '$last'. OK? [Y/n] " confirm
-  case "$confirm" in
-    Y*|y*)
-      ;;
-    *)
-      echo "abort"
-      exit 1
-      ;;
-  esac
+  if [ -n "$confirm" ]; then
+    case "$confirm" in
+      Y*|y*)
+        ;;
+      *)
+        echo "abort"
+        exit 1
+        ;;
+    esac
+  fi
 
   git tag $last
   git push --tags
