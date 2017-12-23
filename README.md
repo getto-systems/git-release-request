@@ -52,7 +52,7 @@ export PATH=$INSTALL_DIR/bin:$PATH
 
 ### git release-status
 
-show next version, and commits since previous release
+show next version and commits since previous release
 
 ```bash
 git release-status #=> (output)
