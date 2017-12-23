@@ -4,6 +4,7 @@ dump version, create changelog and pull request
 
 ```bash
 git release-status
+
 next version: 1.0.1
 commits
 * fix some typos
