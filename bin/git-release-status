@@ -1,0 +1,18 @@
+#!/bin/bash
+
+. git-release-functions.sh
+
+git_release_status_main(){
+  local last
+  local version
+
+  git_release_request_setup
+
+  git_release_request_build_version
+
+  echo "next version: $version"
+  echo "commits"
+  git_release_request_changelog
+}
+
+git_release_status_main

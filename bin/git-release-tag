@@ -1,35 +1,19 @@
 #!/bin/bash
 
-declare -a git_release_version_files
-
-. git-release.rc.sh
+. git-release-functions.sh
 
 git_release_tag_main(){
-  local git_root
   local last
-  local current
   local confirm
 
-  git_root=$(git rev-parse --show-toplevel)
-  if [ ! -d "$git_root" ]; then
-    echo "current directory not in git"
-    exit 1
-  fi
-
-  cd $git_root
-
-  git_release_request_get_last
+  git_release_request_setup
 
   if [ -n "$(git tag | grep "$last")" ]; then
     echo "already tagged: '$last'"
     exit 1
   fi
 
-  current=$(git show --format="%H")
-  if [ -z "$(git show origin "$current" --format="%H")" ]; then
-    echo "current commit has not pushed"
-    exit 1
-  fi
+  git_release_request_purge
 
   read -p "tag '$last'. OK? [Y/n] " confirm
   if [ -n "$confirm" ]; then
@@ -43,7 +27,7 @@ git_release_tag_main(){
     esac
   fi
 
-  git tag $last
+  git tag "$last"
   git push --tags
 }
 
