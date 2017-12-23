@@ -1,116 +1,24 @@
 #!/bin/bash
 
-declare -a git_release_version_files
-
-. git-release.rc.sh
+. git-release-functions.sh
 
 git_release_request_main(){
-  local git_root
-  local version_dump_message
+  local message
+  local last
   local version
 
-  git_root=$(git rev-parse --show-toplevel)
-  if [ ! -d "$git_root" ]; then
-    echo "current directory not in git"
-    exit 1
-  fi
+  message=$1; shift
 
-  cd $git_root
-  version_dump_message="version dump"
+  git_release_request_setup
+  git_release_request_purge
 
   git_release_request_build_version
   git_release_request_version_confirm
 
   git_release_request_dump_version
-  git_release_request_build_changelog
+  git_release_request_build_changelog "$message"
 
-  git branch-and-post "$version_dump_message"
-}
-git_release_request_build_version(){
-  local last
-
-  git_release_request_get_last
-
-  if [[ "${last%%.*}" -lt 2000 ]]; then
-    git_release_request_next_version_normal
-  else
-    git_release_request_next_version_date
-  fi
-}
-git_release_request_next_version_normal(){
-  version=${last%.*}.$((${last##*.} + 1))
-}
-git_release_request_next_version_date(){
-  local last_date
-  local date
-  local count
-
-  last_date=$(echo "$last" | cut -d'-' -f1)
-  date=$(date "+%Y.%-m.%-d")
-
-  if [ "$last_date" == $date ]; then
-    count=$(echo "$last" | cut -d'-' -f2)
-    count=$((count+1))
-  else
-    count=1
-  fi
-
-  version=${date}-${count}
-}
-git_release_request_version_confirm(){
-  local finish
-  local confirm_version
-  local confirm
-
-  confirm_version=$version
-
-  while [ -z "$finish" ]; do
-    read -p "release: '$confirm_version'. OK? [Enter|version] " confirm
-    case "$confirm" in
-      Y*|y*|"")
-        finish=1
-        ;;
-      *)
-        if [[ "$confirm" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9a-zA-Z_-]+)?$ ]]; then
-          confirm_version=$confirm
-        else
-          echo "'$confirm' is not valid version number"
-        fi
-        ;;
-    esac
-  done
-
-  version=$confirm_version
-}
-git_release_request_build_changelog(){
-  local changelog_root
-  local changelog
-
-  changelog_root=CHANGELOG
-  changelog=$changelog_root/${version}.md
-
-  mkdir -p $changelog_root
-
-  git_release_request_changelog "# Changelog : $version"
-  git_release_request_changelog
-  git_release_request_changelog "## commits"
-  git_release_request_changelog
-  git_release_request_changelog_logs
-
-  git add $changelog
-}
-git_release_request_changelog(){
-  echo "$1" >> $changelog
-}
-git_release_request_changelog_logs(){
-  local last_release
-  local revision_range
-
-  last_release=$(git log --grep "$version_dump_message" --no-merges -1 --format="%H")
-  if [ -n "$last_release" ]; then
-    revision_range=${last_release}..
-  fi
-  git log $revision_range --no-merges --format="* %s" >> $changelog
+  git create-work-branch "version dump : $version"
 }
 
-git_release_request_main
+git_release_request_main "$@"
