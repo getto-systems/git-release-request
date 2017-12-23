@@ -115,6 +115,15 @@ you can rewrite some files and add index for version-dump commit
 - $version : new version string
 
 
+### git release-tag
+
+tag latest release version
+
+```bash
+git release-tag #=> git tag $latest_release_version
+```
+
+
 <a id="license"></a>
 ## License
 
