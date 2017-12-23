@@ -110,7 +110,7 @@ git_release_request_dump_version_local(){
 
 this function call before commit
 
-you can rewrite some files and add index for version-dump commit
+you can rewrite some files and add for version-dump commit
 
 - $version : new version string
 
