@@ -91,6 +91,22 @@ git_release_request_dump_version(){
     fi
   fi
 }
+git_release_request_call_after_tag(){
+  local file
+  local cmd
+  local local_rc
+
+  local_rc=.git_release_request.rc.sh
+
+  if [ -e "$local_rc" ]; then
+    . $local_rc
+
+    cmd=git_release_request_after_tag
+    if [ "$(type -t $cmd)" == "function" ]; then
+      $cmd
+    fi
+  fi
+}
 
 git_release_request_build_version(){
   if [[ "${last%%.*}" -lt 2000 ]]; then
@@ -133,31 +149,6 @@ git_release_request_next_version_date(){
   fi
 
   version=${date}-${count}
-}
-git_release_request_version_confirm(){
-  local finish
-  local confirm_version
-  local confirm
-
-  confirm_version=$version
-
-  while [ -z "$finish" ]; do
-    read -p "release: '$confirm_version'. OK? [Enter|version] " confirm
-    case "$confirm" in
-      Y*|y*|"")
-        finish=1
-        ;;
-      *)
-        if [[ "$confirm" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9a-zA-Z_-]+)?$ ]]; then
-          confirm_version=$confirm
-        else
-          echo "'$confirm' is not valid version number"
-        fi
-        ;;
-    esac
-  done
-
-  version=$confirm_version
 }
 
 git_release_request_build_changelog(){

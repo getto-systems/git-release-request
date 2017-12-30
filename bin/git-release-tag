@@ -15,20 +15,7 @@ git_release_tag_main(){
 
   git_release_request_purge
 
-  read -p "tag '$last'. OK? [Y/n] " confirm
-  if [ -n "$confirm" ]; then
-    case "$confirm" in
-      Y*|y*)
-        ;;
-      *)
-        echo "abort"
-        exit 1
-        ;;
-    esac
-  fi
-
-  git tag "$last"
-  git push --tags
+  git tag "$last" && git push --tags && git_release_request_call_after_tag
 }
 
 git_release_tag_main
