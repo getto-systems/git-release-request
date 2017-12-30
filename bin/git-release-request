@@ -13,8 +13,6 @@ git_release_request_main(){
   git_release_request_purge
 
   git_release_request_build_version
-  git_release_request_version_confirm
-
   git_release_request_dump_version
   git_release_request_build_changelog "$message"
 
