@@ -124,6 +124,24 @@ git release-tag #=> git tag $latest_release_version
 ```
 
 
+### git release-request-major
+
+commit "major version up"
+
+```bash
+git release-request-major #=> git commit --allow-empty -m "major version up"
+```
+
+
+### git release-request-minor
+
+commit "minor version up"
+
+```bash
+git release-request-minor #=> git commit --allow-empty -m "minor version up"
+```
+
+
 <a id="license"></a>
 ## License
 
