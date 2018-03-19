@@ -118,10 +118,10 @@ git_release_request_build_version(){
 git_release_request_next_version_normal(){
   local tmp
 
-  if [ -n "$(git_release_request_changelog | grep 'major version up')" ]; then
+  if [ -n "$(git_release_request_changelog | grep "$(git_release_request_major_version_up)")" ]; then
     version=$((${last%%.*} + 1)).0.0
   else
-    if [ -n "$(git_release_request_changelog | grep 'minor version up')" ]; then
+    if [ -n "$(git_release_request_changelog | grep "$(git_release_request_minor_version_up)")" ]; then
       tmp=${last#*.}
       version=${last%%.*}.$((${tmp%%.*} + 1)).0
     else
@@ -132,6 +132,12 @@ git_release_request_next_version_normal(){
       fi
     fi
   fi
+}
+git_release_request_major_version_up(){
+  echo "major version up"
+}
+git_release_request_minor_version_up(){
+  echo "minor version up"
 }
 git_release_request_next_version_date(){
   local last_date
@@ -190,9 +196,7 @@ git_release_request_build_changelog(){
   git add $changelog $changelog_main
 }
 git_release_request_changelog(){
-  if [ -n "$(git tag | grep $last)" ]; then
-    git log "${last}.." --no-merges --format="* %s"
-  else
-    git log --no-merges --format="* %s"
-  fi
+  local last_tag
+  last_tag=$(git describe --abbrev=0 --tags)
+  git log "${last_tag}.." --no-merges --format="* %s"
 }

@@ -1,0 +1,9 @@
+#!/bin/bash
+
+. git-release-functions.sh
+
+git_release_request_minor_main(){
+  git commit --allow-empty -m "$(git_release_request_minor_version_up)"
+}
+
+git_release_request_minor_main "$@"
