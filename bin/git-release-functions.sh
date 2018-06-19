@@ -22,6 +22,7 @@ git_release_request_setup(){
   git_release_version_files=(
     mix.exs
     package.json
+    Chart.yaml
     $GIT_RELEASE_VERSION_FILE
   )
 
@@ -51,6 +52,9 @@ git_release_request_set_last(){
         *.rb)
           last=$(grep 'VERSION =' $file | cut -d'"' -f2)
           ;;
+        Chart.yaml)
+          last=$(grep '^version:' $file | cut -d' ' -f2)
+          ;;
       esac
     fi
     if [ -n "$last" ]; then
@@ -76,6 +80,9 @@ git_release_request_dump_version(){
           ;;
         *.rb)
           sed -i 's/VERSION = "[0-9.-]\+"/VERSION = "'$version'"/' $file
+          ;;
+        Chart.yaml)
+          sed -i 's/^version: "[0-9.-]\+"/version: '$version'/' $file
           ;;
       esac
       git add $file
@@ -197,6 +204,16 @@ git_release_request_build_changelog(){
 }
 git_release_request_changelog(){
   local last_tag
-  last_tag=$(git describe --abbrev=0 --tags)
-  git log "${last_tag}.." --no-merges --format="* %s"
+  local range
+  if [ -n "$(git tag | head -1)" ]; then
+    last_tag=$(git describe --abbrev=0 --tags)
+  fi
+
+  if [ -n "$last_tag" ]; then
+    range="${last_tag}.."
+  else
+    range=""
+  fi
+
+  git log $range --no-merges --format="* %s"
 }
