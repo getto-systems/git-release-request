@@ -22,6 +22,7 @@ git_release_request_setup(){
   git_release_version_files=(
     mix.exs
     package.json
+    elm-package.json
     Chart.yaml
     $GIT_RELEASE_VERSION_FILE
   )
