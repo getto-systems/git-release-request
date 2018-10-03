@@ -24,6 +24,7 @@ git_release_request_setup(){
     package.json
     elm-package.json
     Chart.yaml
+    Cargo.toml
     $GIT_RELEASE_VERSION_FILE
   )
 
@@ -55,6 +56,9 @@ git_release_request_set_last(){
           ;;
         Chart.yaml)
           last=$(grep '^version:' $file | cut -d' ' -f2)
+          ;;
+        Cargo.toml)
+          last=$(grep 'version =' $file | cut -d'"' -f2)
           ;;
       esac
     fi
