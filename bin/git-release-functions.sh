@@ -89,6 +89,9 @@ git_release_request_dump_version(){
         Chart.yaml)
           sed -i 's/^version: [0-9.-]\+/version: '$version'/' $file
           ;;
+        Cargo.toml)
+          sed -i 's/version = "[0-9.-]\+"/version = "'$version'"/' $file
+          ;;
       esac
       git add $file
     fi
