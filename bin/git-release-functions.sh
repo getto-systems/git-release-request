@@ -133,6 +133,8 @@ git_release_request_build_version(){
 git_release_request_next_version_normal(){
   local tmp
 
+  version=0.0.1
+
   if [ -n "$(git_release_request_changelog | grep "$(git_release_request_major_version_up)")" ]; then
     version=$((${last%%.*} + 1)).0.0
   else
@@ -140,10 +142,12 @@ git_release_request_next_version_normal(){
       tmp=${last#*.}
       version=${last%%.*}.$((${tmp%%.*} + 1)).0
     else
-      if [ -n "$last" ]; then
+      if [ -n "$(git_release_request_changelog | grep "$(git_release_request_patch_version_up)")" ]; then
         version=${last%.*}.$((${last##*.} + 1))
       else
-        version=0.0.1
+        # default: minor version up
+        tmp=${last#*.}
+        version=${last%%.*}.$((${tmp%%.*} + 1)).0
       fi
     fi
   fi
@@ -153,6 +157,9 @@ git_release_request_major_version_up(){
 }
 git_release_request_minor_version_up(){
   echo "minor version up"
+}
+git_release_request_patch_version_up(){
+  echo "patch version up"
 }
 git_release_request_next_version_date(){
   local last_date
