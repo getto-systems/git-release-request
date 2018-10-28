@@ -3,7 +3,9 @@
 . git-release-functions.sh
 
 git_release_request_patch_main(){
-  git commit --allow-empty -m "$(git_release_request_patch_version_up)"
+  git create-work-branch "$@" && \
+  git commit --allow-empty -m "$(git_release_request_patch_version_up)" && \
+  git pub
 }
 
 git_release_request_patch_main "$@"
