@@ -124,42 +124,38 @@ git_release_request_call_after_tag(){
 }
 
 git_release_request_build_version(){
+  local next
+
+  next=$1; shift
+
   if [[ "${last%%.*}" -lt 2000 ]]; then
-    git_release_request_next_version_normal
+    git_release_request_next_version_normal "$next"
   else
     git_release_request_next_version_date
   fi
 }
 git_release_request_next_version_normal(){
+  local next
   local tmp
 
-  version=0.0.1
+  next=$1; shift
 
-  if [ -n "$(git_release_request_changelog | grep "$(git_release_request_major_version_up)")" ]; then
-    version=$((${last%%.*} + 1)).0.0
-  else
-    if [ -n "$(git_release_request_changelog | grep "$(git_release_request_minor_version_up)")" ]; then
+  case "$next" in
+    major)
+      version=$((${last%%.*} + 1)).0.0
+      ;;
+    minor)
       tmp=${last#*.}
       version=${last%%.*}.$((${tmp%%.*} + 1)).0
-    else
-      if [ -n "$(git_release_request_changelog | grep "$(git_release_request_patch_version_up)")" ]; then
-        version=${last%.*}.$((${last##*.} + 1))
-      else
-        # default: minor version up
-        tmp=${last#*.}
-        version=${last%%.*}.$((${tmp%%.*} + 1)).0
-      fi
-    fi
-  fi
-}
-git_release_request_major_version_up(){
-  echo "major version up"
-}
-git_release_request_minor_version_up(){
-  echo "minor version up"
-}
-git_release_request_patch_version_up(){
-  echo "patch version up"
+      ;;
+    patch)
+      version=${last%.*}.$((${last##*.} + 1))
+      ;;
+    *)
+      echo "please specify major, minor or patch"
+      exit 1
+      ;;
+  esac
 }
 git_release_request_next_version_date(){
   local last_date

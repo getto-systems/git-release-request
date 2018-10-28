@@ -3,16 +3,18 @@
 . git-release-functions.sh
 
 git_release_request_main(){
+  local next
   local message
   local last
   local version
 
+  next=$1; shift
   message=$1; shift
 
   git_release_request_setup
   git_release_request_purge
 
-  git_release_request_build_version
+  git_release_request_build_version "$next"
   git_release_request_dump_version
   git_release_request_build_changelog "$message"
 
