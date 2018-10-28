@@ -3,16 +3,24 @@
 . git-release-functions.sh
 
 git_release_status_main(){
+  local major
+  local minor
+  local patch
   local last
   local version
 
   git_release_request_setup
 
-  git_release_request_build_version
+  git_release_request_build_version major
+  major=$version
+  git_release_request_build_version minor
+  minor=$version
+  git_release_request_build_version patch
+  patch=$version
 
-  echo "next version: $version"
+  echo "next: $major | $minor | $patch"
   echo "commits"
-  git_release_request_changelog
+  echo "$(git_release_request_changelog)"
 }
 
 git_release_status_main
