@@ -18,7 +18,7 @@ git_release_status_main(){
   git_release_request_build_version patch
   patch=$version
 
-  echo "next: $major | $minor | $patch"
+  echo "next: $patch | $minor | $major"
   echo "commits"
   echo "$(git_release_request_changelog)"
 }
