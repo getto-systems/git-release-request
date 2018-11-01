@@ -20,6 +20,7 @@ git_release_request_setup(){
   cd $git_root
 
   git_release_version_files=(
+    .release-version
     mix.exs
     package.json
     elm-package.json
@@ -45,6 +46,9 @@ git_release_request_set_last(){
   for file in ${git_release_version_files[@]}; do
     if [ -f "$file" ]; then
       case "$file" in
+        .release-version)
+          last=$(cat $file)
+          ;;
         mix.exs)
           last=$(grep 'version:' $file | cut -d'"' -f2)
           ;;
