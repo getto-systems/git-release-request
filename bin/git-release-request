@@ -14,7 +14,7 @@ git_release_request_main(){
   next=$1; shift
   message=$1; shift
 
-  target=${GIT_RELEASE_REQUEST_TARGET:-master}
+  target=${GIT_RELEASE_REQUEST_TARGET:-release}
 
   if [ "$(git symbolic-ref --short HEAD)" != master ]; then
     echo "release-request must be in master branch"
