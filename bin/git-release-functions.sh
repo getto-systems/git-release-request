@@ -156,6 +156,9 @@ git_release_request_next_version_normal(){
       tmp=${last##*.}
       version=${last%.*}.$((${tmp%%-*} + 1))
       ;;
+    exact)
+      version=${last}
+      ;;
     *)
       echo "please specify major, minor or patch"
       exit 1
