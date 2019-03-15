@@ -1,3 +1,7 @@
+# Version : 0.3.0
+
+add: exact mode
+
 # Version : 0.2.0
 
 fix: default release target branch
